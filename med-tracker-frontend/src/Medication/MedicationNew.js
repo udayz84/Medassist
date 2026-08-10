@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Col, Button, Form, FormGroup, Label, Input } from 'reactstrap'
+import { Col, Button, Form, FormGroup, Label, Input, FormFeedback } from 'reactstrap'
 import { DatePicker, Space } from 'antd'
 
 const MedicationNew = (props) => {
@@ -12,9 +12,25 @@ const MedicationNew = (props) => {
     const [time, setTime] = useState(props.medication.time)
     const [reminder, setReminder] = useState(props.medication.reminder)
     const [notes, setNotes] = useState(props.medication.notes)
+    const [errors, setErrors] = useState({})
 
     const handleSubmit = (event) => {
         event.preventDefault()
+
+        const newErrors = {}
+        if (!name || name.trim() === '') newErrors.name = "Name is required."
+        if (!totalQuantity || isNaN(totalQuantity) || Number(totalQuantity) <= 0) newErrors.totalQuantity = "Valid quantity is required."
+        if (!dosage || isNaN(dosage) || Number(dosage) <= 0) newErrors.dosage = "Valid dosage is required."
+        if (!frequency || frequency === "Select your frequency") newErrors.frequency = "Frequency is required."
+        if (!time || time.length === 0) newErrors.time = "At least one time is required."
+        if (!reminder || reminder.length === 0) newErrors.reminder = "At least one reminder is required."
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors)
+            return
+        }
+
+        setErrors({})
 
         props.submitHandler({
             name,
@@ -40,15 +56,15 @@ const MedicationNew = (props) => {
     }
 
     function addSelectedTimes(event) {
-        // console.log(event.target.value)
         const selectedOptions = [...event.target.selectedOptions].map(o => o.value)
         setTime(selectedOptions)
-        // console.log(selectedOptions)
+        if (errors.time) setErrors({ ...errors, time: null })
     }
 
     function addSelectedReminder(event) {
         const selectedOptions = [...event.target.selectedOptions].map(o => o.value)
         setReminder(selectedOptions)
+        if (errors.reminder) setErrors({ ...errors, reminder: null })
     }
 
     function onChangeStartDate(date, dateString) {
@@ -68,10 +84,14 @@ const MedicationNew = (props) => {
                             name="name"
                             id="name"
                             placeholder="Add Medication/Suppliment name"
-                            required
-                            onChange={(e) => setName(e.currentTarget.value)}
+                            invalid={!!errors.name}
+                            onChange={(e) => {
+                                setName(e.currentTarget.value)
+                                if (errors.name) setErrors({ ...errors, name: null })
+                            }}
                             value={name}
                         />
+                        {errors.name && <FormFeedback>{errors.name}</FormFeedback>}
                     </Col>
                 </FormGroup>
                 <FormGroup row>
@@ -83,10 +103,14 @@ const MedicationNew = (props) => {
                             name="totalQuantity"
                             id="totalQuantity"
                             placeholder="Add Total quantity of medication in bottle"
-                            required
-                            onChange={(e) => setTotalQuantity(e.currentTarget.value)}
+                            invalid={!!errors.totalQuantity}
+                            onChange={(e) => {
+                                setTotalQuantity(e.currentTarget.value)
+                                if (errors.totalQuantity) setErrors({ ...errors, totalQuantity: null })
+                            }}
                             value={totalQuantity}
                         />
+                        {errors.totalQuantity && <FormFeedback>{errors.totalQuantity}</FormFeedback>}
                     </Col>
                 </FormGroup>
                 <FormGroup row>
@@ -98,10 +122,14 @@ const MedicationNew = (props) => {
                             name="dosage"
                             id="dosage"
                             placeholder="Add Dosage taken in (ie 1 pill)"
-                            required
-                            onChange={(e) => setDosage(e.currentTarget.value)}
+                            invalid={!!errors.dosage}
+                            onChange={(e) => {
+                                setDosage(e.currentTarget.value)
+                                if (errors.dosage) setErrors({ ...errors, dosage: null })
+                            }}
                             value={dosage}
                         />
+                        {errors.dosage && <FormFeedback>{errors.dosage}</FormFeedback>}
                     </Col>
                 </FormGroup>
 
@@ -121,15 +149,18 @@ const MedicationNew = (props) => {
                             type="select"
                             name="select"
                             id="exampleSelect"
-                            onChange={(e) => setFrequency(e.currentTarget.value)}
-                        // defaultValue={{ label: "Daily", value: "Daily" }} not currently working... 
-                        //find way to use default to Daily not the cheat below!!!
+                            invalid={!!errors.frequency}
+                            onChange={(e) => {
+                                setFrequency(e.currentTarget.value)
+                                if (errors.frequency) setErrors({ ...errors, frequency: null })
+                            }}
                         >
                             <option>Select your frequency</option>
                             <option value="Daily">Daily</option>
                             <option value="Weekly">Weekly</option>
 
                         </Input>
+                        {errors.frequency && <FormFeedback>{errors.frequency}</FormFeedback>}
                     </Col>
                 </FormGroup>
                 <FormGroup row>
@@ -140,6 +171,7 @@ const MedicationNew = (props) => {
                             name="selectMulti"
                             id="selectMulti"
                             multiple={true}
+                            invalid={!!errors.time}
                             onChange={(event) => {
                                 addSelectedTimes(event)
                             }}
@@ -160,6 +192,7 @@ const MedicationNew = (props) => {
                             <option value="20:00">8pm</option>
                             <option value="21:00">9pm</option>
                         </Input>
+                        {errors.time && <FormFeedback>{errors.time}</FormFeedback>}
                     </Col>
                 </FormGroup>
 
@@ -171,6 +204,7 @@ const MedicationNew = (props) => {
                             name="selectMulti"
                             id="selectMulti"
                             multiple={true}
+                            invalid={!!errors.reminder}
                             onChange={(event) => {
                                 addSelectedReminder(event)
                             }}
@@ -180,6 +214,7 @@ const MedicationNew = (props) => {
                             <option value="900">15 minutes</option>
                             <option value="1800">30 minutes</option>
                         </Input>
+                        {errors.reminder && <FormFeedback>{errors.reminder}</FormFeedback>}
                     </Col>
                 </FormGroup>
 
