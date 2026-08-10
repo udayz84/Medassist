@@ -231,8 +231,8 @@ const MedicationNew = (props) => {
                     </Col>
                 </FormGroup>
                 <FormGroup check row>
-                    <Col sm={{ size: 10, offset: 2 }}>
-                        <Button input type="submit">Submit</Button>
+                    <Col sm={{ size: 10, offset: 2 }} className="mt-4 mb-5">
+                        <Button color="primary" block size="lg" type="submit">Submit Medication</Button>
                     </Col>
                     <Col></Col>
                 </FormGroup>
