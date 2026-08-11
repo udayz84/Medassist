@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # ---- MongoDB Database ----
+  mongo:
+    image: mongo:4.4
+    container_name: medtracker-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - medtracker-network
+
+  # ---- Node.js Backend API ----
+  backend:
+    build: ./med-backend
+    container_name: medtracker-backend
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    environment:
+      - PORT=9000
+      - MONGO_URI=mongodb://mongo:27017/medTracker
+      - SESSION_SECRET=medtracker-docker-secret
+    depends_on:
+      - mongo
+    networks:
+      - medtracker-network
+
+  # ---- React Frontend ----
+  frontend:
+    build: ./med-tracker-frontend
+    container_name: medtracker-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - medtracker-network
+
+volumes:
+  mongo-data:
+    driver: local
+
+networks:
+  medtracker-network:
+    driver: bridge

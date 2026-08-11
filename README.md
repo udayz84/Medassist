@@ -60,3 +60,38 @@ Create a `.env` file in the `med-backend` directory (optional, but recommended f
    npm start
    ```
    The frontend will automatically proxy API requests to `http://localhost:9000` and open in your default browser at `http://localhost:3000`.
+
+## Running with Docker 🐳
+
+The easiest way to run the entire stack is with Docker Compose. **No need to install Node.js or MongoDB locally.**
+
+### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/) installed
+- [Docker Compose](https://docs.docker.com/compose/install/) installed (included with Docker Desktop)
+
+### Quick Start
+```bash
+# Clone the repo
+git clone https://github.com/udayz84/Medassist.git
+cd Medassist
+
+# Build and start all services (MongoDB + Backend + Frontend)
+docker-compose up --build
+```
+
+This starts 3 containers:
+| Service    | Container Name         | URL                        |
+|------------|------------------------|----------------------------|
+| Frontend   | medtracker-frontend    | http://localhost:3000       |
+| Backend    | medtracker-backend     | http://localhost:9000       |
+| MongoDB    | medtracker-mongo       | mongodb://localhost:27017   |
+
+### Stop the app
+```bash
+docker-compose down
+```
+
+### Stop and remove all data (including the database)
+```bash
+docker-compose down -v
+```

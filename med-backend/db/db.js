@@ -1,7 +1,9 @@
 //set up database connection
 const mongoose = require('mongoose')
 
-mongoose.connect('mongodb://localhost/medTracker', {
+const mongoURI = process.env.MONGO_URI || 'mongodb://localhost/medTracker'
+
+mongoose.connect(mongoURI, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
